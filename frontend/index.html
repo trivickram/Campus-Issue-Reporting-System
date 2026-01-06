@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Issue Reporting System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0d1117;
+            min-height: 100vh;
+            padding: 32px 16px;
+            color: #c9d1d9;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+        }
+
+        .header {
+            margin-bottom: 48px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #f0f6fc;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+            text-align: center;
+
+        }
+
+        .subtitle {
+            color: #8b949e;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #21262d;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #f0f6fc;
+        }
+
+        .badge {
+            background: #1f6feb;
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 7px;
+            border-radius: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f0f6fc;
+            margin-bottom: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #c9d1d9;
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px 12px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #c9d1d9;
+            font-family: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #1f6feb;
+            box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.1);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: #6e7681;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%238b949e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        select:hover {
+            border-color: #8b949e;
+        }
+
+        select option {
+            background: #161b22;
+            color: #c9d1d9;
+        }
+
+        button {
+            background: #238636;
+            color: #fff;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            width: 100%;
+            transition: background 0.15s ease;
+            font-family: inherit;
+        }
+
+        button:hover {
+            background: #2ea043;
+        }
+
+        button:active {
+            background: #2c974b;
+        }
+
+        button:disabled {
+            background: #21262d;
+            color: #6e7681;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #21262d;
+            color: #c9d1d9;
+        }
+
+        .btn-secondary:hover {
+            background: #30363d;
+        }
+
+        .btn-danger {
+            background: #da3633;
+        }
+
+        .btn-danger:hover {
+            background: #e5534b;
+        }
+
+        .btn-primary {
+            background: #1f6feb;
+        }
+
+        .btn-primary:hover {
+            background: #388bfd;
+        }
+
+        .result {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 6px;
+            background: #dafbe1;
+            border: 1px solid #57ab5a;
+            color: #0e4429;
+            font-size: 14px;
+        }
+
+        .result strong {
+            font-weight: 600;
+        }
+
+        .error {
+            background: #ffd8d3;
+            border: 1px solid #e5534b;
+            color: #86181d;
+        }
+
+        .status-form {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .status-form > div {
+            flex: 1;
+        }
+
+        .status-form button {
+            width: auto;
+            white-space: nowrap;
+        }
+
+        .admin-section {
+            margin-top: 48px;
+        }
+
+        .admin-locked {
+            text-align: center;
+            padding: 48px 32px;
+        }
+
+        .admin-locked h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #f0f6fc;
+        }
+
+        .admin-locked p {
+            color: #8b949e;
+            margin-bottom: 24px;
+        }
+
+        .admin-locked .form-group {
+            max-width: 280px;
+            margin: 0 auto 16px;
+        }
+
+        .admin-locked button {
+            max-width: 200px;
+            margin: 0 auto;
+        }
+
+        .admin-unlocked {
+            display: none;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 12px 16px;
+            background: #1c2128;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+        }
+
+        .admin-header h3 {
+            margin: 0;
+            color: #57ab5a;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-header button {
+            width: auto;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #21262d;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            color: #8b949e;
+            transition: color 0.15s ease, border-color 0.15s ease;
+            font-size: 14px;
+            margin-bottom: -1px;
+        }
+
+        .tab-btn:hover {
+            color: #c9d1d9;
+        }
+
+        .tab-btn.active {
+            color: #f0f6fc;
+            border-bottom-color: #f78166;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .filter-controls select {
+            flex: 1;
+        }
+
+        .filter-controls button {
+            width: auto;
+            padding: 10px 16px;
+        }
+
+        .all-issues-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .all-issues-container::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .all-issues-container::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+
+        .all-issues-container::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 5px;
+        }
+
+        .all-issues-container::-webkit-scrollbar-thumb:hover {
+            background: #484f58;
+        }
+
+        #issuesCount {
+            margin-bottom: 16px;
+            font-weight: 500;
+            color: #8b949e;
+            font-size: 13px;
+        }
+
+        .issue-card {
+            background: #0d1117;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            border-left: 3px solid #8b949e;
+            transition: border-left-color 0.15s ease;
+        }
+
+        .issue-card:hover {
+            border-color: #484f58;
+        }
+
+        .issue-card.status-open {
+            border-left-color: #d29922;
+        }
+
+        .issue-card.status-in-progress {
+            border-left-color: #1f6feb;
+        }
+
+        .issue-card.status-resolved {
+            border-left-color: #238636;
+        }
+
+        .issue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .issue-header strong {
+            color: #f0f6fc;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-open {
+            background: rgba(187, 128, 9, 0.15);
+            color: #d29922;
+        }
+
+        .badge-in-progress {
+            background: rgba(31, 111, 235, 0.15);
+            color: #58a6ff;
+        }
+
+        .badge-resolved {
+            background: rgba(46, 160, 67, 0.15);
+            color: #3fb950;
+        }
+
+        .issue-card > div {
+            margin-bottom: 6px;
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        .issue-card > div strong {
+            color: #c9d1d9;
+            font-weight: 500;
+        }
+
+        .issue-meta {
+            font-size: 12px;
+            color: #6e7681;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #21262d;
+        }
+
+        .issue-meta strong {
+            color: #8b949e;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 16px 12px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .status-form {
+                flex-direction: column;
+            }
+
+            .status-form button {
+                width: 100%;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+            }
+
+            .filter-controls button {
+                width: 100%;
+            }
+
+            .admin-header {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .admin-header button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Campus Issue Reporting</h1>
+            <p class="subtitle">Report and track campus maintenance issues</p>
+        </div>
+        
+        <!-- Report Issue Section -->
+        <div class="card">
+            <div class="section-header">
+                <h2>Report New Issue</h2>
+                <span class="badge">Student</span>
+            </div>
+            <form id="issueForm">
+                <div class="form-group">
+                    <label for="issueType">Issue Type:</label>
+                    <select id="issueType" required>
+                        <option value="">Select an issue type</option>
+                        <option value="Network">Network/Internet Issues</option>
+                        <option value="Maintenance">Maintenance Required</option>
+                        <option value="Security">Security Concern</option>
+                        <option value="Infrastructure">Infrastructure Problem</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="location">Location:</label>
+                    <select id="location" required>
+                        <option value="">Select a location</option>
+                        <option value="Hostel A">Hostel A</option>
+                        <option value="Hostel B">Hostel B</option>
+                        <option value="Hostel C">Hostel C</option>
+                        <option value="Computer Lab 1">Computer Lab 1</option>
+                        <option value="Computer Lab 2">Computer Lab 2</option>
+                        <option value="Library">Library</option>
+                        <option value="Cafeteria">Cafeteria</option>
+                        <option value="Main Building">Main Building</option>
+                        <option value="Sports Complex">Sports Complex</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" placeholder="Please describe the issue in detail..." required></textarea>
+                </div>
+                
+                <button type="submit" id="submitBtn">Submit Issue</button>
+            </form>
+            <div id="submitResult"></div>
+        </div>
+
+        <!-- Check Issue Status Section -->
+        <div class="card">
+            <div class="section-header">
+                <h2>Track Your Issue</h2>
+            </div>
+            <div class="status-form">
+                <div style="flex: 1;">
+                    <label for="issueId">Issue ID:</label>
+                    <input type="text" id="issueId" placeholder="Enter your issue ID">
+                </div>
+                <button onclick="checkStatus()" id="checkBtn">Check Status</button>
+            </div>
+            <div id="statusResult"></div>
+        </div>
+
+        <!-- Admin Section -->
+        <div class="admin-section">
+            <div class="card">
+                <div class="section-header">
+                    <h2>Admin Panel</h2>
+                    <span class="badge" style="background: #da3633;">Admin</span>
+                </div>
+            
+            <!-- Admin Login -->
+            <div id="adminLogin" class="admin-locked">
+                <h3>🔐 Admin Access</h3>
+                <p>Enter PIN to manage issues</p>
+                <div class="form-group">
+                    <input type="password" id="adminAccessId" placeholder="Enter admin Access ID">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="adminPin" placeholder="Enter admin PIN">
+                </div>
+                <button onclick="validateAdminPin()" class="btn-primary">Unlock</button>
+                <div id="pinError"></div>
+            </div>
+
+            <!-- Admin Content (Hidden until unlocked) -->
+            <div id="adminContent" class="admin-unlocked">
+                <div class="admin-header">
+                    <h3>✓ Logged in as Admin</h3>
+                    <button onclick="lockAdmin()" class="btn-danger">Logout</button>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="tab-container">
+                    <button class="tab-btn active" onclick="switchTab('update')">Update Status</button>
+                    <button class="tab-btn" onclick="switchTab('viewAll')">All Issues</button>
+                </div>
+
+                <!-- Update Status Tab -->
+                <div id="updateTab" class="tab-content active">
+                    <div class="form-group">
+                        <label for="adminIssueId">Issue ID:</label>
+                        <input type="text" id="adminIssueId" placeholder="Enter issue ID to update">
+                    </div>
+                    <div class="form-group">
+                        <label for="newStatus">New Status:</label>
+                        <select id="newStatus">
+                            <option value="OPEN">Open</option>
+                            <option value="IN_PROGRESS">In Progress</option>
+                            <option value="RESOLVED">Resolved</option>
+                        </select>
+                    </div>
+                    <button onclick="updateStatus()" id="updateBtn">Update Status</button>
+                    <div id="updateResult"></div>
+                </div>
+
+                <!-- View All Issues Tab -->
+                <div id="viewAllTab" class="tab-content">
+                    <div class="filter-controls">
+                        <select id="statusFilter">
+                            <option value="ALL">All Issues</option>
+                            <option value="OPEN">Open</option>
+                            <option value="IN_PROGRESS">In Progress</option>
+                            <option value="RESOLVED">Resolved</option>
+                        </select>
+                        <button onclick="loadAllIssues()" class="btn-secondary">Refresh</button>
+                        <button onclick="applyFilter()">Filter</button>
+                    </div>
+                    <div id="issuesCount" style="margin-bottom: 15px; font-weight: bold; color: #555;"></div>
+                    <div id="allIssuesContainer" class="all-issues-container"></div>
+                </div>
+            </div>
+        </div>        </div>        </div>
+    </div>
+
+    <script>
+        // Replace with your actual API Gateway URL
+        const API_BASE_URL = "https://ync9sujnm0.execute-api.ap-south-1.amazonaws.com/prod";
+        
+        // Admin PIN
+        const ADMIN_PIN = "admin123";
+        const ADMIN_ACCESS_ID = "adminID";  
+
+        let isAdminAuthenticated = false;
+        let allIssuesData = [];
+
+        // Admin Authentication
+        function validateAdminPin() {
+            const accessId = document.getElementById('adminAccessId').value;
+            const pinError = document.getElementById('pinError');
+
+            if (accessId === ADMIN_ACCESS_ID && document.getElementById('adminPin').value === ADMIN_PIN) {
+                isAdminAuthenticated = true;
+                document.getElementById('adminLogin').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+                pinError.innerHTML = '';        
+
+            } else {
+                pinError.className = 'result error';
+                pinError.innerHTML = '<strong>Error:</strong> Invalid PIN/Access ID. Please try again.';
+            }
+        }
+
+        function lockAdmin() {
+            isAdminAuthenticated = false;
+            document.getElementById('adminLogin').style.display = 'block';
+            document.getElementById('adminContent').style.display = 'none';
+            document.getElementById('adminPin').value = '';
+            document.getElementById('pinError').innerHTML = '';
+        }
+
+        // Tab Switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            if (tabName === 'update') {
+                document.getElementById('updateTab').classList.add('active');
+                event.target.classList.add('active');
+            } else if (tabName === 'viewAll') {
+                document.getElementById('viewAllTab').classList.add('active');
+                event.target.classList.add('active');
+            }
+        }
+
+        // Load All Issues (requires DynamoDB Scan - need to create new Lambda)
+        async function loadAllIssues() {
+            if (!isAdminAuthenticated) {
+                alert('Please authenticate as admin first');
+                return;
+            }
+
+            const container = document.getElementById('allIssuesContainer');
+            const countDiv = document.getElementById('issuesCount');
+            container.innerHTML = '<p>Loading issues from DynamoDB...</p>';
+            countDiv.innerHTML = '';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/get-all-issues`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    allIssuesData = data.issues || [];
+                    
+                    if (allIssuesData.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; color: #6c757d;">No issues found in DynamoDB table.</p>';
+                    } else {
+                        displayIssues(allIssuesData);
+                    }
+                } else {
+                    // Show error with deployment instructions
+                    const errorData = await response.json().catch(() => ({}));
+                    container.innerHTML = `
+                        <div class="result error">
+                            <strong>⚠️ API Endpoint Not Configured</strong><br><br>
+                            <strong>Error:</strong> ${errorData.message || `HTTP ${response.status}: ${response.statusText}`}<br><br>
+                            
+                            <strong>To fix this, you need to deploy the Lambda function:</strong><br>
+                            1. Create Lambda function: <strong>GetAllCampusIssues</strong><br>
+                            2. Copy code from: <code>lambdas/get_all_issues.py</code><br>
+                            3. Add IAM permission: <strong>dynamodb:Scan</strong><br>
+                            4. Create API Gateway endpoint: <strong>GET /get-all-issues</strong><br>
+                            5. Enable CORS and Deploy API<br><br>
+                            
+                            📖 See <strong>ADMIN-FEATURES-GUIDE.md</strong> for detailed steps.
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="result error">
+                        <strong>❌ Connection Error</strong><br><br>
+                        <strong>Error:</strong> ${error.message}<br><br>
+                        
+                        <strong>Possible Causes:</strong><br>
+                        1. Lambda function not created yet<br>
+                        2. API Gateway endpoint not configured<br>
+                        3. API not deployed to 'prod' stage<br>
+                        4. CORS not enabled on the endpoint<br><br>
+                        
+                        📖 Follow deployment guide in <strong>ADMIN-FEATURES-GUIDE.md</strong>
+                    </div>
+                `;
+            }
+        }
+
+        // Display Issues
+        function displayIssues(issues) {
+            const container = document.getElementById('allIssuesContainer');
+            const countDiv = document.getElementById('issuesCount');
+
+            if (!issues || issues.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d;">No issues found.</p>';
+                countDiv.innerHTML = '';
+                return;
+            }
+
+            countDiv.innerHTML = `Total Issues: ${issues.length}`;
+
+            const issuesHTML = issues.map(issue => {
+                const statusClass = issue.status.toLowerCase().replace('_', '-');
+                const badgeClass = `badge-${statusClass}`;
+                const statusDisplay = issue.status.replace('_', ' ');
+
+                return `
+                    <div class="issue-card status-${statusClass}">
+                        <div class="issue-header">
+                            <strong>${issue.issueType}</strong>
+                            <span class="status-badge ${badgeClass}">${statusDisplay}</span>
+                        </div>
+                        <div><strong>Location:</strong> ${issue.location}</div>
+                        <div><strong>Description:</strong> ${issue.description}</div>
+                        <div class="issue-meta">
+                            <strong>Issue ID:</strong> ${issue.issueId}<br>
+                            <strong>Created:</strong> ${new Date(issue.createdAt).toLocaleString()}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = issuesHTML;
+        }
+
+        // Apply Filter
+        function applyFilter() {
+            const filterValue = document.getElementById('statusFilter').value;
+            
+            if (filterValue === 'ALL') {
+                displayIssues(allIssuesData);
+            } else {
+                const filtered = allIssuesData.filter(issue => issue.status === filterValue);
+                displayIssues(filtered);
+            }
+        }
+
+        // Allow Enter key for admin PIN
+        document.addEventListener('DOMContentLoaded', function() {
+            const adminPinInput = document.getElementById('adminPin');
+            if (adminPinInput) {
+                adminPinInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        validateAdminPin();
+                    }
+                });
+            }
+        });
+
+        // Submit Issue Form
+        document.getElementById('issueForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const resultDiv = document.getElementById('submitResult');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/report-issue`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        issueType: document.getElementById('issueType').value,
+                        location: document.getElementById('location').value,
+                        description: document.getElementById('description').value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result';
+                    resultDiv.innerHTML = `
+                        <strong>Issue submitted successfully!</strong><br>
+                        <strong>Issue ID:</strong> ${data.issueId}<br>
+                        Please save this ID to track your issue status.
+                    `;
+                    document.getElementById('issueForm').reset();
+                } else {
+                    throw new Error(data.message || 'Failed to submit issue');
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Issue';
+            }
+        });
+
+        // Check Issue Status
+        async function checkStatus() {
+            const issueId = document.getElementById('issueId').value.trim();
+            const resultDiv = document.getElementById('statusResult');
+            const checkBtn = document.getElementById('checkBtn');
+
+            if (!issueId) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '<strong>Error:</strong> Please enter an Issue ID';
+                return;
+            }
+
+            checkBtn.disabled = true;
+            checkBtn.textContent = 'Checking...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/issue-status/${encodeURIComponent(issueId)}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result';
+                    resultDiv.innerHTML = `
+                        <strong>Issue Details:</strong><br>
+                        <strong>ID:</strong> ${data.issueId}<br>
+                        <strong>Type:</strong> ${data.issueType}<br>
+                        <strong>Location:</strong> ${data.location}<br>
+                        <strong>Status:</strong> ${data.status}<br>
+                        <strong>Created:</strong> ${new Date(data.createdAt).toLocaleString()}<br>
+                        <strong>Description:</strong> ${data.description}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.message}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+            } finally {
+                checkBtn.disabled = false;
+                checkBtn.textContent = 'Check Status';
+            }
+        }
+
+        // Update Issue Status (Admin)
+        async function updateStatus() {
+            if (!isAdminAuthenticated) {
+                alert('Please authenticate as admin first');
+                return;
+            }
+
+            const issueId = document.getElementById('adminIssueId').value.trim();
+            const newStatus = document.getElementById('newStatus').value;
+            const resultDiv = document.getElementById('updateResult');
+            const updateBtn = document.getElementById('updateBtn');
+
+            if (!issueId) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '<strong>Error:</strong> Please enter an Issue ID';
+                return;
+            }
+
+            updateBtn.disabled = true;
+            updateBtn.textContent = 'Updating...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/update-status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        issueId: issueId,
+                        status: newStatus
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result';
+                    resultDiv.innerHTML = `
+                        <strong>Status updated successfully!</strong><br>
+                        Issue ID: ${data.issueId}<br>
+                        New Status: ${data.newStatus}<br>
+                        Email notification sent to admin.
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.message}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+            } finally {
+                updateBtn.disabled = false;
+                updateBtn.textContent = 'Update Status';
+            }
+        }
+
+        // Allow Enter key to check status
+        document.getElementById('issueId').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkStatus();
+            }
+        });
+    </script>
+</body>
+</html>
