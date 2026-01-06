@@ -648,23 +648,37 @@
         // Replace with your actual API Gateway URL
         const API_BASE_URL = "https://your-api-gateway-url/prod";
         
-        // Admin PIN
-        const ADMIN_PIN = "rahul123";
-        const ADMIN_ACCESS_ID = "rahul";  
+        // Admin credentials - Multiple admin IDs with corresponding PINs
+        const ADMIN_CREDENTIALS = {
+            "rahul": "rahul123",
+            "admin1": "admin1pin",
+            "admin2": "admin2pin",
+            "trivickram": "trivickram@2005"
+        };
 
         let isAdminAuthenticated = false;
+        let currentAdminId = null;
         let allIssuesData = [];
 
         // Admin Authentication
         function validateAdminPin() {
-            const accessId = document.getElementById('adminAccessId').value;
+            const accessId = document.getElementById('adminAccessId').value.trim();
+            const enteredPin = document.getElementById('adminPin').value;
             const pinError = document.getElementById('pinError');
 
-            if (accessId === ADMIN_ACCESS_ID && document.getElementById('adminPin').value === ADMIN_PIN) {
+            // Check if the access ID exists and the PIN matches
+            if (ADMIN_CREDENTIALS.hasOwnProperty(accessId) && ADMIN_CREDENTIALS[accessId] === enteredPin) {
                 isAdminAuthenticated = true;
+                currentAdminId = accessId;
                 document.getElementById('adminLogin').style.display = 'none';
                 document.getElementById('adminContent').style.display = 'block';
-                pinError.innerHTML = '';        
+                
+                // Update the admin header to show who is logged in
+                document.querySelector('.admin-header h3').innerHTML = `✓ Logged in as: <span style="color: #58a6ff;">${accessId}</span>`;
+                
+                pinError.innerHTML = '';
+                document.getElementById('adminAccessId').value = '';
+                document.getElementById('adminPin').value = '';
 
             } else {
                 pinError.className = 'result error';
@@ -674,10 +688,15 @@
 
         function lockAdmin() {
             isAdminAuthenticated = false;
+            currentAdminId = null;
             document.getElementById('adminLogin').style.display = 'block';
             document.getElementById('adminContent').style.display = 'none';
+            document.getElementById('adminAccessId').value = '';
             document.getElementById('adminPin').value = '';
             document.getElementById('pinError').innerHTML = '';
+            
+            // Reset the admin header text
+            document.querySelector('.admin-header h3').innerHTML = '✓ Logged in as Admin';
         }
 
         // Tab Switching
