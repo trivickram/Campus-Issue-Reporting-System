@@ -570,6 +570,11 @@
                     <input type="email" id="email" placeholder="student@campus.edu" required>
                 </div>
                 
+                <div class="form-group">
+                    <label for="photo">Upload Issue Photo (optional):</label>
+                    <input type="file" id="photo" accept="image/*">
+                </div>
+                
                 <button type="submit" id="submitBtn">Submit Issue</button>
             </form>
             <div id="submitResult"></div>
@@ -1100,11 +1105,34 @@
                 const data = await response.json();
 
                 if (response.ok) {
+                    const issueId = data.issueId;
+                    let photoMessage = '';
+                    
+                    // Upload photo if selected
+                    const imageKey = await uploadPhoto(issueId);
+                    
+                    if (imageKey) {
+                        try {
+                            await fetch(`${API_BASE_URL}/update-status`, {
+                                method: "PUT",
+                                headers: {"Content-Type": "application/json"},
+                                body: JSON.stringify({
+                                    issueId: issueId,
+                                    imageKey: imageKey
+                                })
+                            });
+                            photoMessage = '<br>Photo uploaded successfully!';
+                        } catch (photoError) {
+                            photoMessage = '<br><span style="color: #d29922;">Issue created but photo upload failed.</span>';
+                        }
+                    }
+                    
                     resultDiv.className = 'result';
                     resultDiv.innerHTML = `
                         <strong>Issue submitted successfully!</strong><br>
-                        <strong>Issue ID:</strong> ${data.issueId}<br>
+                        <strong>Issue ID:</strong> ${issueId}<br>
                         Please save this ID to track your issue status.
+                        ${photoMessage}
                     `;
                     document.getElementById('issueForm').reset();
                 } else {
@@ -1236,6 +1264,39 @@
             } finally {
                 updateBtn.disabled = false;
                 updateBtn.textContent = 'Update Status';
+            }
+        }
+
+        // Photo Upload Function
+        async function uploadPhoto(issueId) {
+            const file = document.getElementById("photo").files[0];
+            if (!file) return null;
+
+            try {
+                // Get presigned URL from Lambda
+                const res = await fetch(`${API_BASE_URL}/get-upload-url`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ issueId })
+                });
+
+                if (!res.ok) {
+                    throw new Error('Failed to get upload URL');
+                }
+
+                const data = await res.json();
+
+                // Upload directly to S3
+                await fetch(data.uploadUrl, {
+                    method: "PUT",
+                    body: file,
+                    headers: { "Content-Type": file.type }
+                });
+
+                return data.fileKey;
+            } catch (error) {
+                console.error('Photo upload error:', error);
+                return null;
             }
         }
 
