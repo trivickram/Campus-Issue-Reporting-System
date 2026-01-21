@@ -2,15 +2,20 @@ import json
 import uuid
 import boto3
 from datetime import datetime
+import os
+
+# SES Configuration - IMPORTANT: Change region to where your SES is verified
+SES_REGION = os.environ.get('SES_REGION', 'ap-south-1')  # Change to your SES region
 
 dynamodb = boto3.resource('dynamodb')
-ses = boto3.client('ses')
+ses = boto3.client('ses', region_name=SES_REGION)
 
 table = dynamodb.Table('CampusIssues')
 
-# Replace with your verified email addresses
-SENDER = "your_verified_email@gmail.com"
-RECEIVER = "your_verified_email@gmail.com"
+# Replace with your VERIFIED SES email addresses
+# Both must be verified in SES console if in Sandbox mode
+SENDER = "rahulkrishnabommu@gmail.com"  # Must be verified in SES
+RECEIVER = "rahulbommu123@gmail.com"    # Must be verified in SES (if sandbox mode)
 
 def lambda_handler(event, context):
     try:
