@@ -531,6 +531,17 @@
                 </div>
                 
                 <div class="form-group">
+                    <label for="priority">Priority Level:</label>
+                    <select id="priority" required>
+                        <option value="">Select priority</option>
+                        <option value="LOW">🟢 Low - Minor inconvenience</option>
+                        <option value="MEDIUM">🟡 Medium - Affects daily work</option>
+                        <option value="HIGH">🟠 High - Urgent attention needed</option>
+                        <option value="CRITICAL">🔴 Critical - Safety/Security issue</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
                     <label for="location">Location:</label>
                     <select id="location" required>
                         <option value="">Select a location</option>
@@ -549,7 +560,12 @@
                 
                 <div class="form-group">
                     <label for="description">Description:</label>
-                    <textarea id="description" placeholder="Please describe the issue " required></textarea>
+                    <textarea id="description" placeholder="Please describe the issue in detail" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Your Email (for updates):</label>
+                    <input type="email" id="email" placeholder="student@campus.edu" required>
                 </div>
                 
                 <button type="submit" id="submitBtn">Submit Issue</button>
@@ -605,6 +621,7 @@
                 <div class="tab-container">
                     <button class="tab-btn active" onclick="switchTab('update')">Update Status</button>
                     <button class="tab-btn" onclick="switchTab('viewAll')">All Issues</button>
+                    <button class="tab-btn" onclick="switchTab('analytics')">Analytics</button>
                 </div>
 
                 <!-- Update Status Tab -->
@@ -617,11 +634,31 @@
                         <label for="newStatus">New Status:</label>
                         <select id="newStatus">
                             <option value="OPEN">Open</option>
+                            <option value="ACKNOWLEDGED">Acknowledged</option>
+                            <option value="ASSIGNED">Assigned</option>
                             <option value="IN_PROGRESS">In Progress</option>
+                            <option value="PENDING">Pending</option>
                             <option value="RESOLVED">Resolved</option>
+                            <option value="CLOSED">Closed</option>
                         </select>
                     </div>
-                    <button onclick="updateStatus()" id="updateBtn">Update Status</button>
+                    <div class="form-group">
+                        <label for="assignTo">Assign To:</label>
+                        <select id="assignTo">
+                            <option value="">Unassigned</option>
+                            <option value="maintenance_team">Maintenance Team</option>
+                            <option value="it_team">IT Team</option>
+                            <option value="security_team">Security Team</option>
+                            <option value="facilities_manager">Facilities Manager</option>
+                            <option value="electrician">Electrician</option>
+                            <option value="plumber">Plumber</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminComment">Add Comment/Note:</label>
+                        <textarea id="adminComment" placeholder="Add update or note about this issue (optional)" rows="3"></textarea>
+                    </div>
+                    <button onclick="updateStatus()" id="updateBtn">Update Issue</button>
                     <div id="updateResult"></div>
                 </div>
 
@@ -631,14 +668,66 @@
                         <select id="statusFilter">
                             <option value="ALL">All Issues</option>
                             <option value="OPEN">Open</option>
+                            <option value="ACKNOWLEDGED">Acknowledged</option>
+                            <option value="ASSIGNED">Assigned</option>
                             <option value="IN_PROGRESS">In Progress</option>
+                            <option value="PENDING">Pending</option>
                             <option value="RESOLVED">Resolved</option>
+                            <option value="CLOSED">Closed</option>
+                        </select>
+                        <select id="priorityFilter" style="margin-left: 8px;">
+                            <option value="ALL">All Priorities</option>
+                            <option value="CRITICAL">Critical</option>
+                            <option value="HIGH">High</option>
+                            <option value="MEDIUM">Medium</option>
+                            <option value="LOW">Low</option>
                         </select>
                         <button onclick="loadAllIssues()" class="btn-secondary">Refresh</button>
                         <button onclick="applyFilter()">Filter</button>
                     </div>
                     <div id="issuesCount" style="margin-bottom: 15px; font-weight: bold; color: #555;"></div>
                     <div id="allIssuesContainer" class="all-issues-container"></div>
+                </div>
+
+                <!-- Analytics Tab -->
+                <div id="analyticsTab" class="tab-content">
+                    <h3 style="margin-bottom: 20px;">📊 Issue Analytics Dashboard</h3>
+                    <div id="analyticsContent">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                            <div style="background: #1c2128; padding: 20px; border-radius: 6px; border: 1px solid #30363d;">
+                                <div style="color: #8b949e; font-size: 12px; margin-bottom: 4px;">Total Issues</div>
+                                <div id="statTotal" style="font-size: 32px; font-weight: 700; color: #58a6ff;">0</div>
+                            </div>
+                            <div style="background: #1c2128; padding: 20px; border-radius: 6px; border: 1px solid #30363d;">
+                                <div style="color: #8b949e; font-size: 12px; margin-bottom: 4px;">Open Issues</div>
+                                <div id="statOpen" style="font-size: 32px; font-weight: 700; color: #d29922;">0</div>
+                            </div>
+                            <div style="background: #1c2128; padding: 20px; border-radius: 6px; border: 1px solid #30363d;">
+                                <div style="color: #8b949e; font-size: 12px; margin-bottom: 4px;">In Progress</div>
+                                <div id="statInProgress" style="font-size: 32px; font-weight: 700; color: #58a6ff;">0</div>
+                            </div>
+                            <div style="background: #1c2128; padding: 20px; border-radius: 6px; border: 1px solid #30363d;">
+                                <div style="color: #8b949e; font-size: 12px; margin-bottom: 4px;">Resolved</div>
+                                <div id="statResolved" style="font-size: 32px; font-weight: 700; color: #3fb950;">0</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                            <div style="background: #1c2128; padding: 20px; border-radius: 6px; border: 1px solid #30363d;">
+                                <h4 style="margin-bottom: 16px; color: #f0f6fc;">Issues by Priority</h4>
+                                <div id="priorityBreakdown"></div>
+                            </div>
+                            <div style="background: #1c2128; padding: 20px; border-radius: 6px; border: 1px solid #30363d;">
+                                <h4 style="margin-bottom: 16px; color: #f0f6fc;">Issues by Type</h4>
+                                <div id="typeBreakdown"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: #1c2128; padding: 20px; border-radius: 6px; border: 1px solid #30363d;">
+                            <h4 style="margin-bottom: 16px; color: #f0f6fc;">Top Locations</h4>
+                            <div id="locationBreakdown"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>        </div>        </div>
@@ -716,6 +805,11 @@
             } else if (tabName === 'viewAll') {
                 document.getElementById('viewAllTab').classList.add('active');
                 event.target.classList.add('active');
+                loadAllIssues(); // Auto-load when switching to this tab
+            } else if (tabName === 'analytics') {
+                document.getElementById('analyticsTab').classList.add('active');
+                event.target.classList.add('active');
+                loadAnalytics(); // Load analytics when switching to this tab
             }
         }
 
@@ -797,15 +891,42 @@
                 const statusClass = issue.status.toLowerCase().replace('_', '-');
                 const badgeClass = `badge-${statusClass}`;
                 const statusDisplay = issue.status.replace('_', ' ');
+                
+                // Priority badge
+                const priorityColors = {
+                    'CRITICAL': '🔴',
+                    'HIGH': '🟠',
+                    'MEDIUM': '🟡',
+                    'LOW': '🟢'
+                };
+                const priorityIcon = priorityColors[issue.priority] || '⚪';
+                
+                // Comments section
+                let commentsHTML = '';
+                if (issue.comments && issue.comments.length > 0) {
+                    commentsHTML = '<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #21262d;">';
+                    commentsHTML += '<strong style="color: #8b949e; font-size: 12px;">Comments:</strong>';
+                    issue.comments.forEach(comment => {
+                        commentsHTML += `<div style="margin-top: 6px; padding: 8px; background: #0d1117; border-radius: 4px; font-size: 13px;">`;
+                        commentsHTML += `<span style="color: #58a6ff;">${comment.by}</span> <span style="color: #6e7681; font-size: 11px;">${new Date(comment.timestamp).toLocaleString()}</span><br>`;
+                        commentsHTML += `<span style="color: #c9d1d9;">${comment.text}</span>`;
+                        commentsHTML += '</div>';
+                    });
+                    commentsHTML += '</div>';
+                }
 
                 return `
                     <div class="issue-card status-${statusClass}">
                         <div class="issue-header">
-                            <strong>${issue.issueType}</strong>
+                            <strong>${priorityIcon} ${issue.issueType}</strong>
                             <span class="status-badge ${badgeClass}">${statusDisplay}</span>
                         </div>
+                        <div><strong>Priority:</strong> ${issue.priority || 'MEDIUM'}</div>
                         <div><strong>Location:</strong> ${issue.location}</div>
                         <div><strong>Description:</strong> ${issue.description}</div>
+                        ${issue.assignedTo ? `<div><strong>Assigned To:</strong> ${issue.assignedTo.replace('_', ' ')}</div>` : ''}
+                        ${issue.email ? `<div><strong>Contact:</strong> ${issue.email}</div>` : ''}
+                        ${commentsHTML}
                         <div class="issue-meta">
                             <strong>Issue ID:</strong> ${issue.issueId}<br>
                             <strong>Created:</strong> ${new Date(issue.createdAt).toLocaleString()}
@@ -819,14 +940,122 @@
 
         // Apply Filter
         function applyFilter() {
-            const filterValue = document.getElementById('statusFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const priorityFilter = document.getElementById('priorityFilter').value;
             
-            if (filterValue === 'ALL') {
-                displayIssues(allIssuesData);
-            } else {
-                const filtered = allIssuesData.filter(issue => issue.status === filterValue);
-                displayIssues(filtered);
+            let filtered = allIssuesData;
+            
+            if (statusFilter !== 'ALL') {
+                filtered = filtered.filter(issue => issue.status === statusFilter);
             }
+            
+            if (priorityFilter !== 'ALL') {
+                filtered = filtered.filter(issue => issue.priority === priorityFilter);
+            }
+            
+            displayIssues(filtered);
+        }
+        
+        // Load Analytics
+        function loadAnalytics() {
+            if (!allIssuesData || allIssuesData.length === 0) {
+                loadAllIssues().then(() => calculateAnalytics());
+            } else {
+                calculateAnalytics();
+            }
+        }
+        
+        function calculateAnalytics() {
+            if (!allIssuesData || allIssuesData.length === 0) {
+                document.getElementById('analyticsContent').innerHTML = '<p style="text-align: center; color: #8b949e;">No data available. Load issues first.</p>';
+                return;
+            }
+            
+            // Calculate totals
+            const total = allIssuesData.length;
+            const open = allIssuesData.filter(i => i.status === 'OPEN' || i.status === 'ACKNOWLEDGED' || i.status === 'ASSIGNED').length;
+            const inProgress = allIssuesData.filter(i => i.status === 'IN_PROGRESS' || i.status === 'PENDING').length;
+            const resolved = allIssuesData.filter(i => i.status === 'RESOLVED' || i.status === 'CLOSED').length;
+            
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statOpen').textContent = open;
+            document.getElementById('statInProgress').textContent = inProgress;
+            document.getElementById('statResolved').textContent = resolved;
+            
+            // Priority breakdown
+            const priorityCounts = {};
+            allIssuesData.forEach(issue => {
+                const priority = issue.priority || 'MEDIUM';
+                priorityCounts[priority] = (priorityCounts[priority] || 0) + 1;
+            });
+            
+            const priorityHTML = Object.entries(priorityCounts)
+                .sort((a, b) => b[1] - a[1])
+                .map(([priority, count]) => {
+                    const percentage = ((count / total) * 100).toFixed(1);
+                    const colors = {CRITICAL: '#da3633', HIGH: '#ff8800', MEDIUM: '#d29922', LOW: '#3fb950'};
+                    return `
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="color: #c9d1d9;">${priority}</span>
+                                <span style="color: #8b949e;">${count} (${percentage}%)</span>
+                            </div>
+                            <div style="background: #21262d; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div style="background: ${colors[priority] || '#8b949e'}; width: ${percentage}%; height: 100%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            document.getElementById('priorityBreakdown').innerHTML = priorityHTML;
+            
+            // Type breakdown
+            const typeCounts = {};
+            allIssuesData.forEach(issue => {
+                typeCounts[issue.issueType] = (typeCounts[issue.issueType] || 0) + 1;
+            });
+            
+            const typeHTML = Object.entries(typeCounts)
+                .sort((a, b) => b[1] - a[1])
+                .map(([type, count]) => {
+                    const percentage = ((count / total) * 100).toFixed(1);
+                    return `
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="color: #c9d1d9;">${type}</span>
+                                <span style="color: #8b949e;">${count} (${percentage}%)</span>
+                            </div>
+                            <div style="background: #21262d; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div style="background: #58a6ff; width: ${percentage}%; height: 100%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            document.getElementById('typeBreakdown').innerHTML = typeHTML;
+            
+            // Location breakdown
+            const locationCounts = {};
+            allIssuesData.forEach(issue => {
+                locationCounts[issue.location] = (locationCounts[issue.location] || 0) + 1;
+            });
+            
+            const locationHTML = Object.entries(locationCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([location, count]) => {
+                    const percentage = ((count / total) * 100).toFixed(1);
+                    return `
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="color: #c9d1d9;">${location}</span>
+                                <span style="color: #8b949e;">${count} (${percentage}%)</span>
+                            </div>
+                            <div style="background: #21262d; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div style="background: #3fb950; width: ${percentage}%; height: 100%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            document.getElementById('locationBreakdown').innerHTML = locationHTML;
         }
 
         // Allow Enter key for admin PIN
@@ -860,7 +1089,9 @@
                     body: JSON.stringify({
                         issueType: document.getElementById('issueType').value,
                         location: document.getElementById('location').value,
-                        description: document.getElementById('description').value
+                        description: document.getElementById('description').value,
+                        priority: document.getElementById('priority').value,
+                        email: document.getElementById('email').value
                     })
                 });
 
@@ -906,15 +1137,33 @@
                 const data = await response.json();
 
                 if (response.ok) {
+                    const priorityIcons = {'CRITICAL': '🔴', 'HIGH': '🟠', 'MEDIUM': '🟡', 'LOW': '🟢'};
+                    const priorityIcon = priorityIcons[data.priority] || '⚪';
+                    
+                    let commentsHTML = '';
+                    if (data.comments && data.comments.length > 0) {
+                        commentsHTML = '<hr style="margin: 12px 0; border: none; border-top: 1px solid #30363d;">';
+                        commentsHTML += '<strong>Updates:</strong><br>';
+                        data.comments.forEach(comment => {
+                            commentsHTML += `<div style="margin-top: 8px; padding: 8px; background: #1c2128; border-radius: 4px;">`;
+                            commentsHTML += `<small style="color: #8b949e;">${new Date(comment.timestamp).toLocaleString()}</small><br>`;
+                            commentsHTML += `${comment.text}`;
+                            commentsHTML += '</div>';
+                        });
+                    }
+                    
                     resultDiv.className = 'result';
                     resultDiv.innerHTML = `
                         <strong>Issue Details:</strong><br>
                         <strong>ID:</strong> ${data.issueId}<br>
+                        <strong>Priority:</strong> ${priorityIcon} ${data.priority || 'MEDIUM'}<br>
                         <strong>Type:</strong> ${data.issueType}<br>
                         <strong>Location:</strong> ${data.location}<br>
                         <strong>Status:</strong> ${data.status}<br>
+                        ${data.assignedTo ? `<strong>Assigned To:</strong> ${data.assignedTo.replace('_', ' ')}<br>` : ''}
                         <strong>Created:</strong> ${new Date(data.createdAt).toLocaleString()}<br>
                         <strong>Description:</strong> ${data.description}
+                        ${commentsHTML}
                     `;
                 } else {
                     resultDiv.className = 'result error';
@@ -958,7 +1207,10 @@
                     },
                     body: JSON.stringify({
                         issueId: issueId,
-                        status: newStatus
+                        status: newStatus,
+                        assignedTo: document.getElementById('assignTo').value || null,
+                        comment: document.getElementById('adminComment').value || null,
+                        updatedBy: currentAdminId
                     })
                 });
 

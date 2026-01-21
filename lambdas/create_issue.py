@@ -17,46 +17,96 @@ def lambda_handler(event, context):
         body = json.loads(event['body'])
 
         issue_id = str(uuid.uuid4())
+        timestamp = datetime.utcnow().isoformat()
 
+        # Create item with new Phase A fields
         item = {
             'issueId': issue_id,
             'issueType': body['issueType'],
             'description': body['description'],
             'location': body['location'],
+            'priority': body.get('priority', 'MEDIUM'),  # NEW: Priority
+            'email': body.get('email', ''),  # NEW: User email
             'status': 'OPEN',
-            'createdAt': datetime.utcnow().isoformat()
+            'createdAt': timestamp,
+            'statusHistory': [  # NEW: Track status changes
+                {
+                    'status': 'OPEN',
+                    'timestamp': timestamp,
+                    'by': 'system'
+                }
+            ],
+            'comments': [],  # NEW: Comments array
+            'assignedTo': None  # NEW: Assignment
         }
 
         # Save to DynamoDB
         table.put_item(Item=item)
 
-        # Send Email Notification via SES
+        # Send Email Notification to user if provided
+        user_email = body.get('email')
+        if user_email:
+            try:
+                priority_emoji = {'CRITICAL': '🔴', 'HIGH': '🟠', 'MEDIUM': '🟡', 'LOW': '🟢'}
+                ses.send_email(
+                    Source=SENDER,
+                    Destination={"ToAddresses": [user_email]},
+                    Message={
+                        "Subject": {
+                            "Data": f"Issue Submitted - {issue_id}"
+                        },
+                        "Body": {
+                            "Text": {
+                                "Data": (
+                                    f"Thank you for reporting the campus issue.\n\n"
+                                    f"Issue ID: {issue_id}\n"
+                                    f"Priority: {priority_emoji.get(item['priority'], '')} {item['priority']}\n"
+                                    f"Type: {body['issueType']}\n"
+                                    f"Location: {body['location']}\n"
+                                    f"Status: OPEN\n\n"
+                                    f"You can track your issue status using the Issue ID.\n"
+                                    f"We will notify you of any updates.\n\n"
+                                    f"Campus Facilities Management"
+                                )
+                            }
+                        }
+                    }
+                )
+                print(f"User email sent to {user_email}")
+            except Exception as e:
+                print(f"User email error: {str(e)}")
+
+        # Send Email to Admin via SES
         try:
+            priority_emoji = {'CRITICAL': '🔴', 'HIGH': '🟠', 'MEDIUM': '🟡', 'LOW': '🟢'}
             ses.send_email(
                 Source=SENDER,
                 Destination={"ToAddresses": [RECEIVER]},
                 Message={
                     "Subject": {
-                        "Data": f"New Campus Issue Reported ({issue_id})"
+                        "Data": f"{priority_emoji.get(item['priority'], '')} New {item['priority']} Priority Issue ({issue_id})"
                     },
                     "Body": {
                         "Text": {
                             "Data": (
+                                f"New campus issue reported:\n\n"
                                 f"Issue ID: {issue_id}\n"
+                                f"Priority: {item['priority']}\n"
                                 f"Type: {body['issueType']}\n"
                                 f"Location: {body['location']}\n"
                                 f"Description: {body['description']}\n"
+                                f"Reported by: {user_email if user_email else 'Anonymous'}\n"
                                 f"Status: OPEN\n"
-                                f"Created At: {item['createdAt']}"
+                                f"Created At: {timestamp}\n\n"
+                                f"Please login to admin panel to manage this issue."
                             )
                         }
                     }
                 }
             )
-            print(f"Email sent successfully for issue {issue_id}")
+            print(f"Admin email sent successfully for issue {issue_id}")
         except Exception as email_error:
-            print(f"Email sending failed: {str(email_error)}")
-            # Continue execution - email failure shouldn't break the flow
+            print(f"Admin email failed: {str(email_error)}")
 
         return {
             "statusCode": 200,
@@ -67,7 +117,8 @@ def lambda_handler(event, context):
             },
             "body": json.dumps({
                 "message": "Issue reported successfully",
-                "issueId": issue_id
+                "issueId": issue_id,
+                "priority": item['priority']
             })
         }
 
